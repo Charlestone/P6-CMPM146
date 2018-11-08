@@ -81,17 +81,116 @@ class Individual_Grid(object):
         new_genome_1 = copy.deepcopy(other.genome)
         # Leaving first and last columns alone...
         # do crossover with other
+
+        #initialize counters for level management
+        genome_0_enemies = 0
+        genome_1_enemies = 0
+        genome_0_coins = 0
+        genome_1_coins = 0
+        genome_0_qblock = 0
+        genome_1_qblock = 0
+        #dimensions
         left = 1
         right = width - 1
+        # create new genomes from crossing the parents
         new_genome_0[:][width/2:right+1] = other[:][width/2:right+1]
         new_genome_1[:][left:width/2] = self[:][left:width/2]
-        for y in range(height):
+
+        for y in range(height - 1):
             for x in range(left, right):
+                #Count the number of enemies in each new level
+                if new_genome_0[y][x] == 'E':
+                    genome_0_enemies += 1
+                if new_genome_1[y][x] == 'E':
+                    genome_1_enemies += 1
+                if new_genome_0[y][x] == 'o':
+                    genome_0_coins += 1
+                if new_genome_1[y][x] == 'o':
+                    genome_1_coins += 1
+                if new_genome_0[y][x] == '?':
+                    genome_0_qblock += 1
+                if new_genome_1[y][x] == '?':
+                    genome_1_qblock += 1
+
+                #check the walls to prevent floating walls
+                new_genome_0 = check_walls(new_genome_0, y, x)
+                new_genome_1 = check_walls(new_genome_1, y, x)
+
+                #check each block/qblock to make sure they are not within 2 spaces of other parts
+                new_genome_0 = check_block(new_genome_0, y, x)
+                new_genome_1 = check_block(new_genome_1, y, x)
+
+        for x in range(left, right):
+            #check to see if there is a floor gap longer the five spaces
+            new_genome_0 = check_floor_gaps(new_genome_0, x)
+            new_genome_1 = check_floor_gaps(new_genome_1, x)
+
+            #check to make sure pipe is connecting
+            new_genome_0 = check_pipe(new_genome_0, x)
+            new_genome_1 = check_pipe(new_genome_1, x)
+
+
+        #--------------------------------------------------------
+        #Functions to do all the checks
+        #--------------------------------------------------------
+
+        #Check the floor gaps
+        def check_floor_gaps(genome, column):
+            if genome[height][column] == '-':
+                counter = 1
+                loop_count = 1
+                while loop_count < 7:
+                    if column + counter in range(1, width - 1):
+                        if genome[height][counter + column] == '-':
+                            if counter > 5:
+                                genome[height][counter + column] = 'X'
+                                counter += 1
+                    loop_count += 1
+            return genome
+        #check the pipes
+        def check_pipe(genome, column):
+            if genome[height - 2][column] == '|':
+                pipe_checker = height - 3
+                while pipe_checker != height - 7:
+                    if genome[pipe_checker, column] == 'T':
+                        break
+                    if genome[pipe_checker, column] == '|':
+                        pipe_checker -= 1
+                        if pipe_checker == height - 7:
+                            genome[pipe_checker + 1, column] = 'T'
+                    else:
+                        genome[pipe_checker, column] = 'T'
+                        break
+            return genome
+        #check the walls
+        def check_walls(genome, row, column):
+            if genome[row][column] == 'X':
+                wall_checker = row + 1
+                if wall_checker <= height:
+                    if genome[wall_checker][column] != 'X':
+                        genome[row][column] = '-'
+            return genome
+        #check the different blocks
+        def check_block(genome, row, column):
+            if genome[row][column] == 'B' or genome[row][column] == '?':
+                block_check = -2
+                while block_check < 3 and block_check + row in range(1, height) and block_check + column in range(1, width):
+                    if genome[row + block_check][column] == 'X' or genome[row + block_check][column] == '|' or genome[row + block_check][column] == 'T':
+                        genome[row][column] = '-'
+                    if genome[row][column + block_check] == 'X' or genome[row][column + block_check] == '|' or genome[row][column + block_check] == 'T':
+                        genome[row][column] = '-'
+                    block_check += 1
+            return genome
+
+
+
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
                   
         # do mutation; note we're returning a one-element tuple here
-        return (Individual_Grid(new_genome),)
+        return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
+
+    
 
     # Turn the genome into a level string (easy for this genome)
     def to_level(self):
