@@ -93,9 +93,20 @@ class Individual_Grid(object):
         left = 1
         right = width - 1
         # create new genomes from crossing the parents
+        for a in rang3
         new_genome_0[:][width/2:right+1] = other.genome[:][width/2:right+1]
         new_genome_1[:][left:width/2] = self.genome[:][left:width/2]
+        for x in range(left, right):
+                    #check if we have walls or gaps at floor height
+                    new_genome_0 = check_floor(new_genome_0, x)
+                    new_genome_1 = check_floor(new_genome_1, x)
+                    #check to see if there is a floor gap longer the five spaces
+                    new_genome_0 = check_floor_gaps(new_genome_0, x)
+                    new_genome_1 = check_floor_gaps(new_genome_1, x)
 
+                    #check to make sure pipe is connecting
+                    new_genome_0 = check_pipe(new_genome_0, x)
+                    new_genome_1 = check_pipe(new_genome_1, x)
         for y in range(height - 1):
             for x in range(left, right):
                 #Count the number of enemies in each new level
@@ -120,14 +131,7 @@ class Individual_Grid(object):
                 new_genome_0 = check_block(new_genome_0, y, x)
                 new_genome_1 = check_block(new_genome_1, y, x)
 
-        for x in range(left, right):
-            #check to see if there is a floor gap longer the five spaces
-            new_genome_0 = check_floor_gaps(new_genome_0, x)
-            new_genome_1 = check_floor_gaps(new_genome_1, x)
-
-            #check to make sure pipe is connecting
-            new_genome_0 = check_pipe(new_genome_0, x)
-            new_genome_1 = check_pipe(new_genome_1, x)
+        
 
         # STUDENT Which one should you take?  Self, or other?  Why?
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
@@ -135,6 +139,15 @@ class Individual_Grid(object):
         #Functions to do all the checks
         #--------------------------------------------------------
 
+        #Check the floor
+        def check_floor(genome, column):
+            chance = random.random()
+            if genome[-1][column] != '-' and genome[-1][column] != 'X':
+                if chance < 0.7:
+                    genome[-1][column] = 'X'
+                else:
+                    genome[-1][column] = '-'
+            return genome
         #Check the floor gaps
         def check_floor_gaps(genome, column):
             if genome[-1][column] == '-':
@@ -182,7 +195,7 @@ class Individual_Grid(object):
                         genome[row][column] = '-'
                     block_check += 1
             return genome
-            
+
         # do mutation; note we're returning a one-element tuple here
         return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
 
