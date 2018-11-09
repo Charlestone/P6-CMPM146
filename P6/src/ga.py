@@ -93,8 +93,8 @@ class Individual_Grid(object):
         left = 1
         right = width - 1
         # create new genomes from crossing the parents
-        new_genome_0[:][width/2:right+1] = other[:][width/2:right+1]
-        new_genome_1[:][left:width/2] = self[:][left:width/2]
+        new_genome_0[:][width/2:right+1] = other.genome[:][width/2:right+1]
+        new_genome_1[:][left:width/2] = self.genome[:][left:width/2]
 
         for y in range(height - 1):
             for x in range(left, right):
@@ -129,14 +129,15 @@ class Individual_Grid(object):
             new_genome_0 = check_pipe(new_genome_0, x)
             new_genome_1 = check_pipe(new_genome_1, x)
 
-
+        # STUDENT Which one should you take?  Self, or other?  Why?
+        # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
         #--------------------------------------------------------
         #Functions to do all the checks
         #--------------------------------------------------------
 
         #Check the floor gaps
         def check_floor_gaps(genome, column):
-            if genome[height][column] == '-':
+            if genome[-1][column] == '-':
                 counter = 1
                 loop_count = 1
                 while loop_count < 7:
@@ -149,7 +150,7 @@ class Individual_Grid(object):
             return genome
         #check the pipes
         def check_pipe(genome, column):
-            if genome[height - 2][column] == '|':
+            if genome[- 2][column] == '|':
                 pipe_checker = height - 3
                 while pipe_checker != height - 7:
                     if genome[pipe_checker, column] == 'T':
@@ -181,12 +182,7 @@ class Individual_Grid(object):
                         genome[row][column] = '-'
                     block_check += 1
             return genome
-
-
-
-                # STUDENT Which one should you take?  Self, or other?  Why?
-                # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
-                  
+            
         # do mutation; note we're returning a one-element tuple here
         return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
 
