@@ -1,0 +1,3 @@
+GENERATING_SUCCESORS
+For generating succesors we are going to use two seleciton methods: elitist selection and tournament selection. The first one, from what we have read, its going to pick a fifth of the parents with the best fitness value so they are part of the next generation. On the other hand, the second selection method is going to choose the best parents from random groups of parents until we have 4/5 of the predecessors. For the second selection we are going to run the tournament selection multiple times to choose the best parents to make up 4/5 of the pool to make the new generation along with the already selected parents from elitist selection. 
+MUTATUION
