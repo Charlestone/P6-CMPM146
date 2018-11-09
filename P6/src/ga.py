@@ -93,9 +93,12 @@ class Individual_Grid(object):
         left = 1
         right = width - 1
         # create new genomes from crossing the parents
-        for a in rang3
-        new_genome_0[:][width/2:right+1] = other.genome[:][width/2:right+1]
-        new_genome_1[:][left:width/2] = self.genome[:][left:width/2]
+        for a in range(height):
+            for b in range(left, right)
+                if b >= width/2:
+                    new_genome_0[a][b] = other.genome[a][b]
+                else:
+                    new_genome_1[a][b] = self.genome[a][b]
         for x in range(left, right):
                     #check if we have walls or gaps at floor height
                     new_genome_0 = check_floor(new_genome_0, x)
@@ -107,7 +110,7 @@ class Individual_Grid(object):
                     #check to make sure pipe is connecting
                     new_genome_0 = check_pipe(new_genome_0, x)
                     new_genome_1 = check_pipe(new_genome_1, x)
-        for y in range(height - 1):
+        for y in range(height):
             for x in range(left, right):
                 #Count the number of enemies in each new level
                 if new_genome_0[y][x] == 'E':
