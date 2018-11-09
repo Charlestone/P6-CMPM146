@@ -1,5 +1,5 @@
 import copy
-import heapq
+from heapq import heappush, heappop
 import metrics
 import multiprocessing.pool as mpool
 import os
@@ -81,6 +81,68 @@ class Individual_Grid(object):
         new_genome_1 = copy.deepcopy(other.genome)
         # Leaving first and last columns alone...
         # do crossover with other
+        # STUDENT Which one should you take?  Self, or other?  Why?
+        # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
+        #--------------------------------------------------------
+        #Functions to do all the checks
+        #--------------------------------------------------------
+        #Check the floor
+        def check_floor(genome, column):
+            chance = random.random()
+            if genome[-1][column] != '-' and genome[-1][column] != 'X':
+                if chance < 0.7:
+                    genome[-1][column] = 'X'
+                else:
+                    genome[-1][column] = '-'
+            return genome
+        #Check the floor gaps
+        def check_floor_gaps(genome, column):
+            if genome[-1][column] == '-':
+                counter = 1
+                loop_count = 1
+                while loop_count < 7:
+                    if column + counter in range(1, width - 1):
+                        if genome[height][counter + column] == '-':
+                            if counter > 5:
+                                genome[height][counter + column] = 'X'
+                                counter += 1
+                    loop_count += 1
+            return genome
+        #check the pipes
+        def check_pipe(genome, column):
+            if genome[- 2][column] == '|':
+                pipe_checker = height - 3
+                while pipe_checker != height - 7:
+                    if genome[pipe_checker][column] == 'T':
+                        break
+                    if genome[pipe_checker][column] == '|':
+                        pipe_checker -= 1
+                        if pipe_checker == height - 7:
+                            genome[pipe_checker + 1][column] = 'T'
+                    else:
+                        genome[pipe_checker][column] = 'T'
+                        break
+            return genome
+        #check the walls
+        def check_walls(genome, row, column):
+            if genome[row][column] == 'X':
+                wall_checker = min(row + 1,15)
+                if wall_checker <= height:
+                    if genome[wall_checker][column] != 'X':
+                        genome[row][column] = '-'
+            return genome
+        def check_block(genome, row, column):
+            if genome[row][column] == 'B' or genome[row][column] == '?':
+                block_check = -2
+                while block_check < 3 and block_check + row in range(1, height) and block_check + column in range(1, width):
+                    if genome[row + block_check][column] == 'X' or genome[row + block_check][column] == '|' or genome[row + block_check][column] == 'T':
+                        genome[row][column] = '-'
+                    if genome[row][column + block_check] == 'X' or genome[row][column + block_check] == '|' or genome[row][column + block_check] == 'T':
+                        genome[row][column] = '-'
+                    block_check += 1
+            return genome
+
+
 
         #initialize counters for level management
         genome_0_enemies = 0
@@ -94,7 +156,7 @@ class Individual_Grid(object):
         right = width - 1
         # create new genomes from crossing the parents
         for a in range(height):
-            for b in range(left, right)
+            for b in range(left, right):
                 if b >= width/2:
                     new_genome_0[a][b] = other.genome[a][b]
                 else:
@@ -136,68 +198,17 @@ class Individual_Grid(object):
 
         
 
-        # STUDENT Which one should you take?  Self, or other?  Why?
-        # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
-        #--------------------------------------------------------
-        #Functions to do all the checks
-        #--------------------------------------------------------
+        
 
-        #Check the floor
-        def check_floor(genome, column):
-            chance = random.random()
-            if genome[-1][column] != '-' and genome[-1][column] != 'X':
-                if chance < 0.7:
-                    genome[-1][column] = 'X'
-                else:
-                    genome[-1][column] = '-'
-            return genome
-        #Check the floor gaps
-        def check_floor_gaps(genome, column):
-            if genome[-1][column] == '-':
-                counter = 1
-                loop_count = 1
-                while loop_count < 7:
-                    if column + counter in range(1, width - 1):
-                        if genome[height][counter + column] == '-':
-                            if counter > 5:
-                                genome[height][counter + column] = 'X'
-                                counter += 1
-                    loop_count += 1
-            return genome
-        #check the pipes
-        def check_pipe(genome, column):
-            if genome[- 2][column] == '|':
-                pipe_checker = height - 3
-                while pipe_checker != height - 7:
-                    if genome[pipe_checker, column] == 'T':
-                        break
-                    if genome[pipe_checker, column] == '|':
-                        pipe_checker -= 1
-                        if pipe_checker == height - 7:
-                            genome[pipe_checker + 1, column] = 'T'
-                    else:
-                        genome[pipe_checker, column] = 'T'
-                        break
-            return genome
-        #check the walls
-        def check_walls(genome, row, column):
-            if genome[row][column] == 'X':
-                wall_checker = row + 1
-                if wall_checker <= height:
-                    if genome[wall_checker][column] != 'X':
-                        genome[row][column] = '-'
-            return genome
+        
+        
+        #check for floating pipes
+        #def check_f_pipes(genome, row, column):
+        #   if genome[row][column] == '|':
+        #       if genome[row + 1][column] == 'X':
+        #   return genome
         #check the different blocks
-        def check_block(genome, row, column):
-            if genome[row][column] == 'B' or genome[row][column] == '?':
-                block_check = -2
-                while block_check < 3 and block_check + row in range(1, height) and block_check + column in range(1, width):
-                    if genome[row + block_check][column] == 'X' or genome[row + block_check][column] == '|' or genome[row + block_check][column] == 'T':
-                        genome[row][column] = '-'
-                    if genome[row][column + block_check] == 'X' or genome[row][column + block_check] == '|' or genome[row][column + block_check] == 'T':
-                        genome[row][column] = '-'
-                    block_check += 1
-            return genome
+        
 
         # do mutation; note we're returning a one-element tuple here
         return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
@@ -461,6 +472,31 @@ def generate_successors(population):
     results = []
     # STUDENT Design and implement this
     # Hint: Call generate_children() on some individuals and fill up results.
+    fitness_values = []
+    parents = []
+    pop_length = len(population)
+    elitist_length = math.ceil((1/5)*pop_length)
+    tournament_length = pop_length - elitist_length
+    #Elitist selection
+    for index in range(0,pop_length):
+        heappush(fitness_values, (Individual.fitness(population[index]),index))
+    for i in range(0, elitist_length + 1):
+        child = heappop(fitness_values)
+        heappush(fitness_values, child)
+        results.append(population[child[1]])
+    #Tournament selection
+    for i in range(0, tournament_length + 1):
+        contestant1 = fitness_values[random.randint(0, tournament_length)]
+        contestant2 = fitness_values[random.randint(0, tournament_length)]
+        contestant3 = fitness_values[random.randint(0, tournament_length)]
+        parents.append(population[max(contestant1,contestant2,contestant3)[1]])
+        #Generate children
+    for i in range(0, 2, len(parents)):
+        parent1 = parents[i]
+        parent2 = parents[i+1]
+        child1, child2 = parent1.generate_children(parent2)
+        results.append(child1)
+        results.append(child2)
     return results
 
 
