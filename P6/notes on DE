@@ -12,3 +12,6 @@ Mutate for DE: Firstly, it only mutates the genome 10% of the time. If it is the
 - Pipe: 50% of the time it varies its position in the map and the rest of the time it varies its height.
 
 
+Mutate changes:
+
+We have added some changes so if it not enters the mutation it was implemented, it (50% of the time) change the element (if the element is 0, it turns 1, if it's one, it turns 2, etc.).
