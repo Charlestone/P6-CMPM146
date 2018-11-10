@@ -11,9 +11,4 @@ Mutate for DE: Firstly, it only mutates the genome 10% of the time. If it is the
 - Stairs: 33.33% of the time it varies its position in the map, 33.33% of the time it varies its height and the rest of the time it varies the direction of the stairs.
 - Pipe: 50% of the time it varies its position in the map and the rest of the time it varies its height.
 
------------------------------------------
-
-I don't know what kind of diagram they're expecting.
-
-We can put the same constrains that we've thought for the first kind of AG.
 
