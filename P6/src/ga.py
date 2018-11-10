@@ -67,9 +67,217 @@ class Individual_Grid(object):
         # STUDENT implement a mutation operator, also consider not mutating this individual
         # STUDENT also consider weighting the different tile types so it's not uniformly random
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
-
         left = 1
         right = width - 1
+        for column in range(left, right):
+            chance = random.random()
+            if chance < 0.1:
+                for row in range(height):
+                    chance2 = random.random()
+                    if genome[row][column] == '-':
+                        if chance2 < 0.1:
+                            chance3 = random.random()
+                            if chance3 < 0.3:
+                                genome[row][column] = 'X'
+                            elif chance3 < 0.35:
+                                genome[row][column] = '?'
+                            elif chance3 < 0.4:
+                                genome[row][column] = 'M'
+                            elif chance3 < 0.6:
+                                genome[row][column] = 'B'
+                            elif chance3 < 0.7:
+                                genome[row][column] = 'o'
+                            elif chance3 < 0.8:
+                                genome[row][column] = 'E'
+                            else:
+                                #Replace for a whole pipe
+                                if row > 5:
+                                    for i in range(0,4):
+                                        if i == 4:
+                                            genome[row - i][column] = 'T'
+                                            continue
+                                        genome[row - i][column] = '|'
+                                else:
+                                    for i in range(0,4):
+                                        if i == 0:
+                                            genome[row + i][column] = 'T'
+                                            continue
+                                        genome[row + i][column] = '|'
+
+                    elif genome[row][column] == 'X':
+                        if chance2 < 0.1:
+                            chance3 = random.random()
+                            if chance3 < 0.3:
+                                genome[row][column] = '-'
+                            elif chance3 < 0.35:
+                                genome[row][column] = '?'
+                            elif chance3 < 0.4:
+                                genome[row][column] = 'M'
+                            elif chance3 < 0.6:
+                                genome[row][column] = 'B'
+                            elif chance3 < 0.7:
+                                genome[row][column] = 'o'
+                            elif chance3 < 0.8:
+                                genome[row][column] = 'E'
+                            else:
+                                #Replace for a whole pipe
+                                if row > 5:
+                                    for i in range(0,4):
+                                        if i == 4:
+                                            genome[row - i][column] = 'T'
+                                            continue
+                                        genome[row - i][column] = '|'
+                                else:
+                                    for i in range(0,4):
+                                        if i == 0:
+                                            genome[row + i][column] = 'T'
+                                            continue
+                                        genome[row + i][column] = '|'
+                    elif genome[row][column] == 'o':
+                        if chance2 < 0.05:
+                            chance3 = random.random()
+                            if chance3 < 0.3:
+                                genome[row][column] = 'X'
+                            elif chance3 < 0.35:
+                                genome[row][column] = '?'
+                            elif chance3 < 0.4:
+                                genome[row][column] = 'M'
+                            elif chance3 < 0.6:
+                                genome[row][column] = 'B'
+                            elif chance3 < 0.7:
+                                genome[row][column] = '-'
+                            elif chance3 < 0.8:
+                                genome[row][column] = 'E'
+                            else:
+                                #Replace for a whole pipe
+                                if row > 5:
+                                    for i in range(0,4):
+                                        if i == 4:
+                                            genome[row - i][column] = 'T'
+                                            continue
+                                        genome[row - i][column] = '|'
+                                else:
+                                    for i in range(0,4):
+                                        if i == 0:
+                                            genome[row + i][column] = 'T'
+                                            continue
+                                        genome[row + i][column] = '|'
+                    elif genome[row][column] == 'E':
+                        if chance2 < 0.02:
+                            chance3 = random.random()
+                            if chance3 < 0.3:
+                                genome[row][column] = 'X'
+                            elif chance3 < 0.35:
+                                genome[row][column] = '?'
+                            elif chance3 < 0.4:
+                                genome[row][column] = 'M'
+                            elif chance3 < 0.6:
+                                genome[row][column] = 'B'
+                            elif chance3 < 0.7:
+                                genome[row][column] = 'o'
+                            elif chance3 < 0.8:
+                                genome[row][column] = '.-'
+                            else:
+                                #Replace for a whole pipe
+                                if row > 5:
+                                    for i in range(0,4):
+                                        if i == 4:
+                                            genome[row - i][column] = 'T'
+                                            continue
+                                        genome[row - i][column] = '|'
+                                else:
+                                    for i in range(0,4):
+                                        if i == 0:
+                                            genome[row + i][column] = 'T'
+                                            continue
+                                        genome[row + i][column] = '|'
+                    elif genome[row][column] == '?':
+                        if chance2 < 0.1:
+                            chance3 = random.random()
+                            if chance3 < 0.3:
+                                genome[row][column] = 'X'
+                            elif chance3 < 0.35:
+                                genome[row][column] = '-'
+                            elif chance3 < 0.4:
+                                genome[row][column] = 'M'
+                            elif chance3 < 0.6:
+                                genome[row][column] = 'B'
+                            elif chance3 < 0.7:
+                                genome[row][column] = 'o'
+                            elif chance3 < 0.8:
+                                genome[row][column] = 'E'
+                            else:
+                                #Replace for a whole pipe
+                                if row > 5:
+                                    for i in range(0,4):
+                                        if i == 4:
+                                            genome[row - i][column] = 'T'
+                                            continue
+                                        genome[row - i][column] = '|'
+                                else:
+                                    for i in range(0,4):
+                                        if i == 0:
+                                            genome[row + i][column] = 'T'
+                                            continue
+                                        genome[row + i][column] = '|'
+                    elif genome[row][column] == 'M':   
+                        if chance2 < 0.05:
+                            chance3 = random.random()
+                            if chance3 < 0.3:
+                                genome[row][column] = 'X'
+                            elif chance3 < 0.35:
+                                genome[row][column] = '?'
+                            elif chance3 < 0.4:
+                                genome[row][column] = '-'
+                            elif chance3 < 0.6:
+                                genome[row][column] = 'B'
+                            elif chance3 < 0.7:
+                                genome[row][column] = 'o'
+                            elif chance3 < 0.8:
+                                genome[row][column] = 'E'
+                            else:
+                                #Replace for a whole pipe
+                                if row > 5:
+                                    for i in range(0,4):
+                                        if i == 4:
+                                            genome[row - i][column] = 'T'
+                                            continue
+                                        genome[row - i][column] = '|'
+                                else:
+                                    for i in range(0,4):
+                                        if i == 0:
+                                            genome[row + i][column] = 'T'
+                                            continue
+                                        genome[row + i][column] = '|'
+                    elif genome[row][column] == 'B':
+                        if chance2 < 0.05:
+                            chance3 = random.random()
+                            if chance3 < 0.3:
+                                genome[row][column] = 'X'
+                            elif chance3 < 0.35:
+                                genome[row][column] = '?'
+                            elif chance3 < 0.4:
+                                genome[row][column] = 'M'
+                            elif chance3 < 0.6:
+                                genome[row][column] = '-'
+                            elif chance3 < 0.7:
+                                genome[row][column] = 'o'
+                            elif chance3 < 0.8:
+                                genome[row][column] = 'E'
+                            else:
+                                #Replace for a whole pipe
+                                if row > 5:
+                                    for i in range(0,4):
+                                        if i == 4:
+                                            genome[row - i][column] = 'T'
+                                            continue
+                                        genome[row - i][column] = '|'
+                                else:
+                                    for i in range(0,4):
+                                        if i == 0:
+                                            genome[row + i][column] = 'T'
+                                            continue
+                                        genome[row + i][column] = '|'
         for y in range(height):
             for x in range(left, right):
                 pass
@@ -131,6 +339,7 @@ class Individual_Grid(object):
                     if genome[wall_checker][column] != 'X':
                         genome[row][column] = '-'
             return genome
+        #check the different blocks
         def check_block(genome, row, column):
             if genome[row][column] == 'B' or genome[row][column] == '?':
                 block_check = -2
@@ -141,7 +350,19 @@ class Individual_Grid(object):
                         genome[row][column] = '-'
                     block_check += 1
             return genome
-
+        #check for floating pipes
+        def check_f_pipes(genome, row, column):
+            if genome[row][column] == '|':
+                current_row = row
+                while genome[current_row][column] == '|':
+                    current_row = current_row + 1
+                if genome[current_row][column] != 'X':
+                    for i in range(row, current_row + 1):
+                        genome[i][column] = '-'
+            if genome[row][column] == 'T':
+                if genome[row + 1][column] != '|':
+                    genome[row][column] = '-'
+            return genome
 
 
         #initialize counters for level management
@@ -196,19 +417,8 @@ class Individual_Grid(object):
                 new_genome_0 = check_block(new_genome_0, y, x)
                 new_genome_1 = check_block(new_genome_1, y, x)
 
-        
-
-        
-
-        
-        
-        #check for floating pipes
-        #def check_f_pipes(genome, row, column):
-        #   if genome[row][column] == '|':
-        #       if genome[row + 1][column] == 'X':
-        #   return genome
-        #check the different blocks
-        
+                new_genome_0 = check_f_pipes(new_genome_0, y, x)
+                new_genome_1 = check_f_pipes(new_genome_1, y, x)
 
         # do mutation; note we're returning a one-element tuple here
         return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
@@ -241,8 +451,10 @@ class Individual_Grid(object):
         g[15][:] = ["X"] * width
         g[14][0] = "m"
         g[7][-1] = "v"
-        g[8:14][-1] = ["f"] * 6
-        g[14:16][-1] = ["X", "X"]
+        for col in range(8, 14):
+            g[col][-1] = "f"
+        for col in range(14, 16):
+            g[col][-1] = "X"
         return cls(g)
 
 
