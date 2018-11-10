@@ -576,7 +576,8 @@ class Individual_DE(object):
     def mutate(self, new_genome):
         # STUDENT How does this work?  Explain it in your writeup.
         # STUDENT consider putting more constraints on this, to prevent generating weird things
-        if random.random() < 0.1 and len(new_genome) > 0:
+        chance = random.random()
+        if chance < 0.1 and len(new_genome) > 0:
             to_change = random.randint(0, len(new_genome) - 1)
             de = new_genome[to_change]
             new_de = de
@@ -649,8 +650,32 @@ class Individual_DE(object):
                 new_de = (x, de_type, w, y, madeof)
             elif de_type == "2_enemy":
                 pass
-            new_genome.pop(to_change)
+            new_genome.pop(i)
             heapq.heappush(new_genome, new_de)
+        elif chance < 0.6:
+            for i in range(0, len(new_genome) - 1):
+                de = new_genome[i]
+                new_de = de
+                x = de[0]
+                de_type = de[1]
+                if de_type == "0_hole":
+                    de = (x, "1_platform", 3, 3)
+                elif de_type == "1_platform":
+                    de = (x, "2_enemy")
+                elif de_type == "2_enemy":
+                    de = (x, "3_coin", 3)
+                elif de_type == "3_coin":
+                    de = (x, "4_block", 3, True)
+                elif de_type == "4_block":
+                    de = (x, "5_qblock", 3, True)
+                elif de_type == "5_qblock":
+                    de = (x, "6_stairs", 4, 1)
+                elif de_type == "6_stairs":
+                    de = (x, "7_pipe", 4)
+                elif de_type == "7_pipe":
+                    de = (x, "0_hole", 3)
+                new_genome.pop(to_change)
+                heapq.heappush(new_genome, new_de)
         return new_genome
 
     def generate_children(self, other):
