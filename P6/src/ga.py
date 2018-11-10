@@ -1,5 +1,6 @@
 import copy
 from heapq import heappush, heappop
+import heapq
 import metrics
 import multiprocessing.pool as mpool
 import os
@@ -304,18 +305,18 @@ class Individual_Grid(object):
                     genome[-1][column] = '-'
             return genome
         #Check the floor gaps
-        def check_floor_gaps(genome, column):
-            if genome[-1][column] == '-':
-                counter = 1
-                loop_count = 1
-                while loop_count < 7:
-                    if column + counter in range(1, width - 1):
-                        if genome[height][counter + column] == '-':
-                            if counter > 5:
-                                genome[height][counter + column] = 'X'
-                                counter += 1
-                    loop_count += 1
-            return genome
+        # def check_floor_gaps(genome, column):
+        #     if genome[-1][column] == '-':
+        #         counter = 1
+        #         loop_count = 1
+        #         while loop_count < 7:
+        #             if column + counter in range(1, width - 1):
+        #                 if genome[height][counter + column] == '-':
+        #                     if counter > 5:
+        #                         genome[height][counter + column] = 'X'
+        #                         counter += 1
+        #             loop_count += 1
+        #     return genome
         #check the pipes
         def check_pipe(genome, column):
             if genome[- 2][column] == '|':
@@ -372,6 +373,8 @@ class Individual_Grid(object):
         genome_1_coins = 0
         genome_0_qblock = 0
         genome_1_qblock = 0
+        genome_0_Mblock = 0
+        genome_1_Mblock = 0
         #dimensions
         left = 1
         right = width - 1
@@ -387,8 +390,8 @@ class Individual_Grid(object):
                     new_genome_0 = check_floor(new_genome_0, x)
                     new_genome_1 = check_floor(new_genome_1, x)
                     #check to see if there is a floor gap longer the five spaces
-                    new_genome_0 = check_floor_gaps(new_genome_0, x)
-                    new_genome_1 = check_floor_gaps(new_genome_1, x)
+                    #new_genome_0 = check_floor_gaps(new_genome_0, x)
+                    #new_genome_1 = check_floor_gaps(new_genome_1, x)
 
                     #check to make sure pipe is connecting
                     new_genome_0 = check_pipe(new_genome_0, x)
@@ -397,18 +400,48 @@ class Individual_Grid(object):
             for x in range(left, right):
                 #Count the number of enemies in each new level
                 if new_genome_0[y][x] == 'E':
-                    genome_0_enemies += 1
+                    if genome_0_enemies > 15:
+                        new_genome_0[y][x] = '-'
+                    else:
+                        genome_0_enemies += 1
                 if new_genome_1[y][x] == 'E':
-                    genome_1_enemies += 1
-                if new_genome_0[y][x] == 'o':
-                    genome_0_coins += 1
-                if new_genome_1[y][x] == 'o':
-                    genome_1_coins += 1
-                if new_genome_0[y][x] == '?':
-                    genome_0_qblock += 1
-                if new_genome_1[y][x] == '?':
-                    genome_1_qblock += 1
+                    if genome_1_enemies > 15:
+                        new_genome_1[y][x] = '-'
+                    else:
+                        genome_1_enemies += 1
 
+                if new_genome_0[y][x] == 'o':
+                    if genome_0_coins > 4:
+                        new_genome_0[y][x] = '-'
+                    else:
+                        genome_0_coins += 1
+                if new_genome_1[y][x] == 'o':
+                    if genome_1_coins > 4:
+                        new_genome_1[y][x] = '-'
+                    else:
+                        genome_1_coins += 1
+
+                if new_genome_0[y][x] == '?':
+                    if genome_0_qblock > 10:
+                        new_genome_0[y][x] = 'B'
+                    else:
+                        genome_0_qblock += 1
+                if new_genome_1[y][x] == '?':
+                    if genome_1_qblock > 10:
+                        new_genome_1[y][x] = 'B'
+                    else:
+                        genome_1_qblock += 1
+
+                if new_genome_0[y][x] == 'M':
+                    if genome_0_Mblock > 3:
+                        new_genome_0[y][x] = '-'
+                    else:
+                        genome_0_Mblock += 1
+                if new_genome_1[y][x] == 'M':
+                    if genome_1_Mblock > 3:
+                        new_genome_1[y][x] = '-'
+                    else:
+                        genome_1_Mblock += 1
                 #check the walls to prevent floating walls
                 new_genome_0 = check_walls(new_genome_0, y, x)
                 new_genome_1 = check_walls(new_genome_1, y, x)
@@ -421,6 +454,7 @@ class Individual_Grid(object):
                 new_genome_1 = check_f_pipes(new_genome_1, y, x)
 
         # do mutation; note we're returning a one-element tuple here
+
         return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
 
     
@@ -448,13 +482,30 @@ class Individual_Grid(object):
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
         # STUDENT also consider weighting the different tile types so it's not uniformly random
         g = [random.choices(options, k=width) for row in range(height)]
+        left = 1
+        right = width - 1
+        for row in range(height):
+            for col in range(left,right):
+                random_value = random.randint(1,100)
+                if random_value < 70:
+                    g[row][col] = '-'
+            
+
         g[15][:] = ["X"] * width
         g[14][0] = "m"
-        g[7][-1] = "v"
+
         for col in range(8, 14):
             g[col][-1] = "f"
         for col in range(14, 16):
             g[col][-1] = "X"
+        for col in range(0, 8):
+            g[col][-1] = "-"
+        for row in range(0, 15):
+            col = -2
+            while col != -6:
+                g[row][col] = '-'
+                col -= 1
+        g[7][-1] = "v"
         return cls(g)
 
 
@@ -505,6 +556,12 @@ class Individual_DE(object):
         penalties = 0
         # STUDENT For example, too many stairs are unaesthetic.  Let's penalize that
         if len(list(filter(lambda de: de[1] == "6_stairs", self.genome))) > 5:
+            penalties -= 2
+        if len(list(filter(lambda de: de[1] == "5_qblock", self.genome))) > 10:
+            penalties -= 2
+        if len(list(filter(lambda de: de[1] == "3_coin", self.genome))) > 3:
+            penalties -= 2
+        if len(list(filter(lambda de: de[1] == "2_enemy", self.genome))) > 15:
             penalties -= 2
         # STUDENT If you go for the FI-2POP extra credit, you can put constraint calculation in here too and cache it in a new entry in __slots__.
         self._fitness = sum(map(lambda m: coefficients[m] * measurements[m],
@@ -751,9 +808,8 @@ def ga():
                             f.write("".join(row) + "\n")
                 generation += 1
                 # STUDENT Determine stopping condition
-                stop_condition = False
-                if stop_condition:
-                    break
+                # if generation > 60:
+                #     break
                 # STUDENT Also consider using FI-2POP as in the Sorenson & Pasquier paper
                 gentime = time.time()
                 next_population = generate_successors(population)
@@ -781,3 +837,4 @@ if __name__ == "__main__":
         with open("levels/" + now + "_" + str(k) + ".txt", 'w') as f:
             for row in final_gen[k].to_level():
                 f.write("".join(row) + "\n")
+
