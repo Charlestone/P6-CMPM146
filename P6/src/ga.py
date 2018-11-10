@@ -808,9 +808,8 @@ def ga():
                             f.write("".join(row) + "\n")
                 generation += 1
                 # STUDENT Determine stopping condition
-                stop_condition = False
-                if stop_condition:
-                    break
+                # if generation > 60:
+                #     break
                 # STUDENT Also consider using FI-2POP as in the Sorenson & Pasquier paper
                 gentime = time.time()
                 next_population = generate_successors(population)
@@ -838,3 +837,4 @@ if __name__ == "__main__":
         with open("levels/" + now + "_" + str(k) + ".txt", 'w') as f:
             for row in final_gen[k].to_level():
                 f.write("".join(row) + "\n")
+
