@@ -1,5 +1,6 @@
 import copy
 from heapq import heappush, heappop
+import heapq
 import metrics
 import multiprocessing.pool as mpool
 import os
@@ -96,18 +97,18 @@ class Individual_Grid(object):
                     genome[-1][column] = '-'
             return genome
         #Check the floor gaps
-        def check_floor_gaps(genome, column):
-            if genome[-1][column] == '-':
-                counter = 1
-                loop_count = 1
-                while loop_count < 7:
-                    if column + counter in range(1, width - 1):
-                        if genome[height][counter + column] == '-':
-                            if counter > 5:
-                                genome[height][counter + column] = 'X'
-                                counter += 1
-                    loop_count += 1
-            return genome
+        # def check_floor_gaps(genome, column):
+        #     if genome[-1][column] == '-':
+        #         counter = 1
+        #         loop_count = 1
+        #         while loop_count < 7:
+        #             if column + counter in range(1, width - 1):
+        #                 if genome[height][counter + column] == '-':
+        #                     if counter > 5:
+        #                         genome[height][counter + column] = 'X'
+        #                         counter += 1
+        #             loop_count += 1
+        #     return genome
         #check the pipes
         def check_pipe(genome, column):
             if genome[- 2][column] == '|':
@@ -168,8 +169,8 @@ class Individual_Grid(object):
                     new_genome_0 = check_floor(new_genome_0, x)
                     new_genome_1 = check_floor(new_genome_1, x)
                     #check to see if there is a floor gap longer the five spaces
-                    new_genome_0 = check_floor_gaps(new_genome_0, x)
-                    new_genome_1 = check_floor_gaps(new_genome_1, x)
+                    #new_genome_0 = check_floor_gaps(new_genome_0, x)
+                    #new_genome_1 = check_floor_gaps(new_genome_1, x)
 
                     #check to make sure pipe is connecting
                     new_genome_0 = check_pipe(new_genome_0, x)
@@ -201,12 +202,12 @@ class Individual_Grid(object):
 
                 if new_genome_0[y][x] == '?':
                     if genome_0_qblock > 10:
-                        new_genome_0[y][x] = '-'
+                        new_genome_0[y][x] = 'B'
                     else:
                         genome_0_qblock += 1
                 if new_genome_1[y][x] == '?':
                     if genome_1_qblock > 10:
-                        new_genome_1[y][x] = '-'
+                        new_genome_1[y][x] = 'B'
                     else:
                         genome_1_qblock += 1
 
@@ -277,11 +278,19 @@ class Individual_Grid(object):
 
         g[15][:] = ["X"] * width
         g[14][0] = "m"
-        g[7][-1] = "v"
+
         for col in range(8, 14):
             g[col][-1] = "f"
         for col in range(14, 16):
             g[col][-1] = "X"
+        for col in range(0, 8):
+            g[col][-1] = "-"
+        for row in range(0, 15):
+            col = -2
+            while col != -6:
+                g[row][col] = '-'
+                col -= 1
+        g[7][-1] = "v"
         return cls(g)
 
 
@@ -332,6 +341,12 @@ class Individual_DE(object):
         penalties = 0
         # STUDENT For example, too many stairs are unaesthetic.  Let's penalize that
         if len(list(filter(lambda de: de[1] == "6_stairs", self.genome))) > 5:
+            penalties -= 2
+        if len(list(filter(lambda de: de[1] == "5_qblock", self.genome))) > 10:
+            penalties -= 2
+        if len(list(filter(lambda de: de[1] == "3_coin", self.genome))) > 3:
+            penalties -= 2
+        if len(list(filter(lambda de: de[1] == "2_enemy", self.genome))) > 15:
             penalties -= 2
         # STUDENT If you go for the FI-2POP extra credit, you can put constraint calculation in here too and cache it in a new entry in __slots__.
         self._fitness = sum(map(lambda m: coefficients[m] * measurements[m],
@@ -504,7 +519,7 @@ class Individual_DE(object):
         return Individual_DE(g)
 
 
-Individual = Individual_Grid
+Individual = Individual_DE
 
 
 def generate_successors(population):
