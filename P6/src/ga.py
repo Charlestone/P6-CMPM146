@@ -151,6 +151,8 @@ class Individual_Grid(object):
         genome_1_coins = 0
         genome_0_qblock = 0
         genome_1_qblock = 0
+        genome_0_Mblock = 0
+        genome_1_Mblock = 0
         #dimensions
         left = 1
         right = width - 1
@@ -176,18 +178,48 @@ class Individual_Grid(object):
             for x in range(left, right):
                 #Count the number of enemies in each new level
                 if new_genome_0[y][x] == 'E':
-                    genome_0_enemies += 1
+                    if genome_0_enemies > 15:
+                        new_genome_0[y][x] = '-'
+                    else:
+                        genome_0_enemies += 1
                 if new_genome_1[y][x] == 'E':
-                    genome_1_enemies += 1
-                if new_genome_0[y][x] == 'o':
-                    genome_0_coins += 1
-                if new_genome_1[y][x] == 'o':
-                    genome_1_coins += 1
-                if new_genome_0[y][x] == '?':
-                    genome_0_qblock += 1
-                if new_genome_1[y][x] == '?':
-                    genome_1_qblock += 1
+                    if genome_1_enemies > 15:
+                        new_genome_1[y][x] = '-'
+                    else:
+                        genome_1_enemies += 1
 
+                if new_genome_0[y][x] == 'o':
+                    if genome_0_coins > 4:
+                        new_genome_0[y][x] = '-'
+                    else:
+                        genome_0_coins += 1
+                if new_genome_1[y][x] == 'o':
+                    if genome_1_coins > 4:
+                        new_genome_1[y][x] = '-'
+                    else:
+                        genome_1_coins += 1
+
+                if new_genome_0[y][x] == '?':
+                    if genome_0_qblock > 10:
+                        new_genome_0[y][x] = '-'
+                    else:
+                        genome_0_qblock += 1
+                if new_genome_1[y][x] == '?':
+                    if genome_1_qblock > 10:
+                        new_genome_1[y][x] = '-'
+                    else:
+                        genome_1_qblock += 1
+
+                if new_genome_0[y][x] == 'M':
+                    if genome_0_Mblock > 3:
+                        new_genome_0[y][x] = '-'
+                    else:
+                        genome_0_Mblock += 1
+                if new_genome_1[y][x] == 'M':
+                    if genome_1_Mblock > 3:
+                        new_genome_1[y][x] = '-'
+                    else:
+                        genome_1_Mblock += 1
                 #check the walls to prevent floating walls
                 new_genome_0 = check_walls(new_genome_0, y, x)
                 new_genome_1 = check_walls(new_genome_1, y, x)
@@ -195,8 +227,7 @@ class Individual_Grid(object):
                 #check each block/qblock to make sure they are not within 2 spaces of other parts
                 new_genome_0 = check_block(new_genome_0, y, x)
                 new_genome_1 = check_block(new_genome_1, y, x)
-
-        
+                    
 
         
 
@@ -211,6 +242,8 @@ class Individual_Grid(object):
         
 
         # do mutation; note we're returning a one-element tuple here
+        new_genome_0[8:14][-1] = ["f"] * 6
+        new_genome_1[8:14][-1] = ["f"] * 6
         return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
 
     
@@ -238,6 +271,15 @@ class Individual_Grid(object):
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
         # STUDENT also consider weighting the different tile types so it's not uniformly random
         g = [random.choices(options, k=width) for row in range(height)]
+        left = 1
+        right = width - 1
+        for row in range(height):
+            for col in range(left,right):
+                random_value = random.randint(1,100)
+                if random_value < 70:
+                    g[row][col] = '-'
+            
+
         g[15][:] = ["X"] * width
         g[14][0] = "m"
         g[7][-1] = "v"
