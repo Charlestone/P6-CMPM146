@@ -227,11 +227,7 @@ class Individual_Grid(object):
                 #check each block/qblock to make sure they are not within 2 spaces of other parts
                 new_genome_0 = check_block(new_genome_0, y, x)
                 new_genome_1 = check_block(new_genome_1, y, x)
-                    
-
-        
-
-        
+                          
         
         #check for floating pipes
         #def check_f_pipes(genome, row, column):
@@ -242,8 +238,7 @@ class Individual_Grid(object):
         
 
         # do mutation; note we're returning a one-element tuple here
-        new_genome_0[8:14][-1] = ["f"] * 6
-        new_genome_1[8:14][-1] = ["f"] * 6
+
         return (Individual_Grid(new_genome_0), Individual_Grid(new_genome_1))
 
     
@@ -283,8 +278,10 @@ class Individual_Grid(object):
         g[15][:] = ["X"] * width
         g[14][0] = "m"
         g[7][-1] = "v"
-        g[8:14][-1] = ["f"] * 6
-        g[14:16][-1] = ["X", "X"]
+        for col in range(8, 14):
+            g[col][-1] = "f"
+        for col in range(14, 16):
+            g[col][-1] = "X"
         return cls(g)
 
 
